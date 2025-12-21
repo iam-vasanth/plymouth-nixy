@@ -1,5 +1,5 @@
 {
-  description = "Nixy Plymouth Theme";
+  description = "Nixy - Plymouth Theme";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 

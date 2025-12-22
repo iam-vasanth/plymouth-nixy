@@ -4,13 +4,6 @@
 
 A minimalist Plymouth boot theme for NixOS featuring a pulsating Nix logo animation.
 
-## Features
-
-- **Pulsating Logo Animation**: Smooth breathing effect on the Nix logo
-- **Clean Black Background**: Minimalist design that doesn't distract
-- **Password Prompt Support**: Password entry for encrypted drives
-- **Silent Boot Integration**: Works seamlessly with silent boot configurations
-
 ## Preview
 
 *[WIP]*
@@ -25,7 +18,11 @@ A minimalist Plymouth boot theme for NixOS featuring a pulsating Nix logo animat
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixy-theme.url = "github:iam-vasanth/nixy";
+    # Stable branch can also be used
+    plymouth-nixy = {
+      url = "github:iam-vasanth/plymouth-nixy";
+      inputs.nixpkgs.follows = "nixpkgs-url";
+    }
     # ... your other inputs
   };
 }
@@ -34,28 +31,27 @@ A minimalist Plymouth boot theme for NixOS featuring a pulsating Nix logo animat
 2. **Pass the theme to your NixOS configuration:**
 
 ```
-outputs = { self, nixpkgs, nixy-theme, ... }: {
+outputs = { self, nixpkgs, plymouth-nixy, ... }: {
   nixosConfigurations.**yourhostname** = nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
     modules = [ ./configuration.nix ];
     specialArgs = {
-      inherit nixy-theme;
+      inherit plymouth-nixy;
     };
   };
 };
 ```
-Enter your hostname where it says `yourhostname`
 
 3. **Update your `configuration.nix`:**
 
 ```
-{ config, pkgs, nixy-theme, ... }:
+{ config, pkgs, plymouth-nixy, ... }:
 
 {
   boot.plymouth = {
     enable = true;
     theme = "nixy";
-    themePackages = [ nixy-theme.packages.${pkgs.system}.default ];
+    themePackages = [ plymouth-nixy.packages.x86_64-linux.default ];
   };
   
   # Optional: Enable silent boot for a cleaner experience
@@ -77,40 +73,6 @@ Enter your hostname where it says `yourhostname`
 
 ```
 sudo nixos-rebuild switch --flake .#yourhostname
-```
-
-### Traditional NixOS Installation
-
-If you're not using flakes, you can clone this repository and import it directly:
-
-1. **Clone the repository:**
-
-```
-git clone https://github.com/iam-vasanth/nixy.git "Your/configuration.nix/location"
-```
-
-2. **Add to your `configuration.nix`:**
-
-```
-{ config, pkgs, ... }:
-
-{
-  nixpkgs.config.packageOverrides = pkgs: {
-    nixyTheme = pkgs.callPackage /etc/nixos/nixy-theme/nixy-theme.nix {};
-  };
-
-  boot.plymouth = {
-    enable = true;
-    theme = "nixy";
-    themePackages = [ pkgs.nixyTheme ];
-  };
-}
-```
-
-3. **Rebuild:**
-
-```
-sudo nixos-rebuild switch
 ```
 
 ## Customization
@@ -172,18 +134,6 @@ Window.SetBackgroundBottomColor(0.0, 0.0, 0.0);
 If the password prompt doesn't appear or looks incorrect, rebuild your initrd:
 ```
 sudo nixos-rebuild boot
-```
-
-## File Structure
-
-```
-.
-├── flake.nix           # Flake configuration
-├── nixy-theme.nix      # Nix package definition
-└── nixy/
-    ├── nixy.plymouth   # Theme metadata
-    ├── nixy.script     # Animation script
-    └── logo.png        # Theme logo (add your own)
 ```
 
 ## Contributing

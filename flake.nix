@@ -10,6 +10,7 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in {
           default = pkgs.stdenvNoCC.mkDerivation {
+            name = "plymouth-nixy";
             src = ./.;
             installPhase = ''
               INSTALL_PATH="$out/share/plymouth/themes/nixy"
